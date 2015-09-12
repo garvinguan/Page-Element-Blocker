@@ -192,7 +192,7 @@ td.booleanOption { font-size: 12px; }
 .includeRemoveButtonButton:hover {
   color: #444;
 }
-input.pattern, input.passKeys, .includeHeaderText {
+input.pattern, input.classToRemove, .includeHeaderText {
   width: 100%;
   font-family: Consolas, "Liberation Mono", Courier, monospace;
   font-size: 14px;
