@@ -10,7 +10,7 @@
 	    "matches": ["<all_urls>"],
 	    "js": ["content_scripts/code.js"],
 	    "options_page": "options.html",
-	    "run_at": "document_end"
+	    "run_at": "document_start"
 	}
     ],
 
