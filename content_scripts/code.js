@@ -1,4 +1,8 @@
-deleteElements('.header-nav-item, #topchapter, #wrapper_header');
+chrome.storage.sync.get("classesToRemove", function(obj)
+			{
+			    console.log(obj);
+			    deleteElements(obj.classesToRemove.toString());
+			});
 
 function deleteElements(selector) {
     // in case the content script was injected after the page is partially loaded

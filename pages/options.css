@@ -135,9 +135,6 @@ input#searchUrl {
   width: 1px;
   white-space: nowrap;
 }
-#buttonsPanel { width: 100%; }
-#advancedOptions { display: none; }
-#advancedOptionsButton { width: 170px; }
 .help {
   position: absolute;
   right: -320px;
@@ -175,7 +172,10 @@ td.booleanOption { font-size: 12px; }
   color: #444;
   width: 100%
 }
-#includeRules {
+#includeClassRules {
+  width: 100%;
+}
+#includeIDRules {
   width: 100%;
 }
 .includeRulePassKeys {
@@ -192,7 +192,7 @@ td.booleanOption { font-size: 12px; }
 .includeRemoveButtonButton:hover {
   color: #444;
 }
-input.pattern, input.classToRemove, .includeHeaderText {
+input.classURLpattern, input.idURLpattern, input.idToRemove, input.classToRemove, .includeHeaderText {
   width: 100%;
   font-family: Consolas, "Liberation Mono", Courier, monospace;
   font-size: 14px;
@@ -201,7 +201,12 @@ input.pattern, input.classToRemove, .includeHeaderText {
   padding-left: 3px;
   color: #979ca0;
 }
-#includeAddButton {
+#includeClassAddButton {
+  float: right;
+  margin-right: 0px;
+  margin-top: 5px;
+}
+#includeIDAddButton {
   float: right;
   margin-right: 0px;
   margin-top: 5px;

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head><title>My Test Extension Options</title></head>
+    <body>
+
+	<div id="wrapper">
+	    <header>DOM out</header>
+	    <table id="options">
+		<tr>
+		    <td class="caption">Classes to remove</td>
+		    <td>
+			<div class="help">
+			    <div class="example">
+				"Patterns" are URL regular expressions;
+				additionally, "*" matches any zero or more characters.
+			    </div>
+			</div>
+			<div>
+			    <div id="includeScrollBox"><table id="includeClassRules">
+				<tbody><tr>
+				    <td><span class="includeHeaderText">Patterns</span></td>
+				    <td><span class="includeHeaderText">Classes</span></td>
+				</tr>
+				</tbody></table>
+				<template id="includeClassRulesTemplate">
+				    <tr class="includeClassRuleTemplateInstance">
+					<td><input type="text" class="classURLpattern" placeholder="URL pattern"></td>
+					<td class="includeRulePassKeys"><input type="text" class="classToRemove" placeholder="Exclude keys"></td>
+					<td class="includeRemoveButton"><input type="button" class="includeRemoveButtonButton" value="✖"></td>
+				    </tr>
+				</template>
+			    </div>
+			    <button id="includeClassAddButton">Add Pattern</button>
+			</div>
+		    </td>
+		</tr>
+		<tr>
+		    <td class="caption">IDs to remove</td>
+		    <td>
+			<div class="help">
+			    <div class="example">
+				"Patterns" are URL regular expressions;
+				additionally, "*" matches any zero or more characters.
+			    </div>
+			</div>
+			<div>
+			    <div id="includeScrollBox"><table id="includeIDRules">
+				<tbody><tr>
+				    <td><span class="includeHeaderText">Patterns</span></td>
+				    <td><span class="includeHeaderText">IDs</span></td>
+				</tr>
+				</tbody></table>
+				<template id="includeIDRulesTemplate">
+				    <tr class="includeIDRuleTemplateInstance">
+					<td><input type="text" class="idURLpattern" placeholder="URL pattern"></td>
+					<td class="includeRulePassKeys"><input type="text" class="idToRemove" placeholder="Exclude keys"></td>
+					<td class="includeRemoveButton"><input type="button" class="includeRemoveButtonButton" value="✖"></td>
+				    </tr>
+				</template>
+			    </div>
+			    <button id="includeIDAddButton">Add Pattern</button>
+			</div>
+		    </td>
+		</tr>
+	    </table>
+	</div>
+	<div id="status"></div>
+	<button id="save">Save</button>
+
+	<script src="options.js"></script>
+	<link rel="stylesheet" type="text/css" href="options.css">
+    </body>
+</html>
