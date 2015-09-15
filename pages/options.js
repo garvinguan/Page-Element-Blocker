@@ -31,24 +31,48 @@ function add_pattern_row(rule, identifier,ref) {
 
 function save_options() {
     var templateInstances = document.querySelectorAll('.includeClassRuleTemplateInstance'),
-	idUrl, idPattern, classUrl, classPattern, options = {}, idOptions = {}, classOptions = {};
+	idUrl, idPatterns, classUrl, classPatterns, options = {}, idOptions = {}, classOptions = {};
 
     for(var i=0;i<templateInstances.length; i++){
 	classUrl = templateInstances[i].getElementsByClassName('classURLpattern')[0].value;
-	classPattern = templateInstances[i].getElementsByClassName('classToRemove')[0].value;
+	classPatterns = templateInstances[i].getElementsByClassName('classToRemove')[0].value.replace(/\s+/g, '');
+	if(classPatterns.length < 1) continue;
+	classPatterns = classPatterns.split(',');
+	var classPattern = "";
+	for (var j=classPatterns.length-1;j>0; j--){
+	    if (classPatterns[j].substring(0,1) !== '.')
+		classPattern+='.' + classPatterns[j] + ',';
+	}
+	if (classPatterns[0] !== '.')
+	    classPattern+='.' + classPatterns[0];
+	else
+	    classPattern+= classPatterns[0];
+
 	classOptions[classUrl]=classPattern;
     }
 
     templateInstances = document.querySelectorAll('.includeIDRuleTemplateInstance');
     for(i=0;i<templateInstances.length; i++){
 	idUrl = templateInstances[i].getElementsByClassName('idURLpattern')[0].value;
-	idPattern = templateInstances[i].getElementsByClassName('idToRemove')[0].value;
+	idPatterns = templateInstances[i].getElementsByClassName('idToRemove')[0].value.replace(/\s+/g, '');
+	if(idPatterns.length < 1) continue;
+	idPatterns = idPatterns.split(',');
+	var idPattern = "";
+	for (j=idPatterns.length-1;j>0; j--){
+	    if (idPatterns[j].substring(0,1) !== '#')
+		idPattern += '#' + idPatterns[j] + ',';
+	    else
+		idPattern += idPatterns[j] + ',';
+	}
+	if (idPatterns[0].substring(0,1) !== '#')
+	    idPattern+='#' + idPatterns[0];
+	else
+	    idPattern+= idPatterns[0];
 
-	idOptions[idUrl]=idPattern;
+	idOptions[idUrl] = idPattern;
     }
     options['idOptions']=idOptions;
     options['classOptions']=classOptions;
-    console.log(options);
     chrome.storage.sync.set(options, function() {
         // Update status to let user know options were saved.
         var status = document.getElementById('status');
