@@ -39,14 +39,17 @@ function save_options() {
 	if(classPatterns.length < 1) continue;
 	classPatterns = classPatterns.split(',');
 	var classPattern = "";
-	for (var j=classPatterns.length-1;j>0; j--){
+	var numPatterns = classPatterns.length-1;
+	for (var j=0;j<numPatterns; j++){
 	    if (classPatterns[j].substring(0,1) !== '.')
 		classPattern+='.' + classPatterns[j] + ',';
+	    else
+		classPattern+= classPatterns[j] + ',';
 	}
-	if (classPatterns[0] !== '.')
-	    classPattern+='.' + classPatterns[0];
+	if (classPatterns[numPatterns].substring(0,1) !== '.')
+	    classPattern+='.' + classPatterns[numPatterns];
 	else
-	    classPattern+= classPatterns[0];
+	    classPattern+= classPatterns[numPatterns];
 
 	classOptions[classUrl]=classPattern;
     }
@@ -58,21 +61,24 @@ function save_options() {
 	if(idPatterns.length < 1) continue;
 	idPatterns = idPatterns.split(',');
 	var idPattern = "";
-	for (j=idPatterns.length-1;j>0; j--){
+	numPatterns = idPatterns.length-1;
+	for (j=0;j<numPatterns; j++){
 	    if (idPatterns[j].substring(0,1) !== '#')
 		idPattern += '#' + idPatterns[j] + ',';
 	    else
 		idPattern += idPatterns[j] + ',';
 	}
-	if (idPatterns[0].substring(0,1) !== '#')
-	    idPattern+='#' + idPatterns[0];
+	if (idPatterns[numPatterns].substring(0,1) !== '#')
+	    idPattern+='#' + idPatterns[numPatterns];
 	else
-	    idPattern+= idPatterns[0];
+	    idPattern+= idPatterns[numPatterns];
 
 	idOptions[idUrl] = idPattern;
     }
     options['idOptions']=idOptions;
     options['classOptions']=classOptions;
+    console.log('saving options');
+    console.log(options);
     chrome.storage.sync.set(options, function() {
         // Update status to let user know options were saved.
         var status = document.getElementById('status');

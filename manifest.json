@@ -19,7 +19,7 @@
 	"default_title": "Garvin Click here!"
     },
     "permissions": [
-	"tabs",
+	"activeTab",
 	"storage",
 	"<all_urls>"
     ]
