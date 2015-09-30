@@ -8,7 +8,7 @@
     "content_scripts": [
 	{
 	    "matches": ["<all_urls>"],
-	    "js": ["content_scripts/code.js"],
+	    "js": ["url.js","content_scripts/code.js"],
 	    "run_at": "document_start"
 	}
     ],
@@ -19,7 +19,7 @@
 	"default_title": "Garvin Click here!"
     },
     "permissions": [
-	"activeTab",
+	"tabs",
 	"storage",
 	"<all_urls>"
     ]

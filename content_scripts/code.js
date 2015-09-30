@@ -2,31 +2,29 @@ var queryInfo = {
     active: true,
     currentWindow: true
 };
-var urlParser = require('./url');
 
-chrome.tabs.query(queryInfo, function(tabs) {
-    var tab = tabs[0];
-    var url = tab.url;
+chrome.storage.sync.get(null, function(options)
+			{
+			    console.log(options);
+			    var classUrls = Object.keys(options.classOptions);
+			    var matchedUrl = testUrl(document.URL, classUrls);
+			    console.log(matchedUrl);
+			    if (matchedUrl)
+				deleteElements(options.classOptions[matchedUrl]);
 
-    console.assert(typeof url == 'string', 'tab.url should be a string');
-    console.log('url');
-    console.log(url);
-    chrome.storage.sync.get(null, function(options)
-			    {
-				console.log(options);
-				var classUrls = Object.keys(options.classOptions);
-				testUrl(url, classUrls);
-				var idUrls = Object.keys(options.idOptions);
-				deleteElements(options.classesToRemove.toString());
-			    });
-});
+			    var idUrls = Object.keys(options.idOptions);
+			    matchedUrl = testUrl(document.URL, classUrls);
+			    console.log(matchedUrl);
+			    if (matchedUrl)
+				deleteElements(options.idOptions[matchedUrl]);
+			});
 
 function testUrl(url, urls) {
     var numUrls = urls.length;
     for (var i=0; i<numUrls; i++) {
 	var urlMatcher = urlToTest(urls[i]);
 	if (urlMatcher(url))
-	    return url;
+	    return urls[i];
     }
 }
 
@@ -37,25 +35,31 @@ function urlToTest(input){
 	return 'WILDCARD';
     });
 
-    var parts = urlParser.parse(patched);
+    var parts = URL.parse(patched);
 
     return function(url2) {
-	var parsed2 = urlParser.parse(url2);
+	var parsed2 = URL.parse(url2);
 	if (parts.scheme.text !== 'WILDCARD') {
-	    if (parsed2.scheme.text !== parts.scheme.text) return false;
+	    var scheme = escapeRegExp(parts.scheme.text).replace(/WILDCARD/g,'.*');
+	    var schemeRegex = new RegExp(scheme,"g");
+	    if ( !(schemeRegex.test(parsed2.scheme.text)) ) return false;
 	}
 	if (parts.host.text !== 'WILDCARD') {
-	    if (parsed2.host.text !== parts.host.text) return false;
+	    var host = escapeRegExp(parts.host.text).replace(/WILDCARD/g,'\.*');
+	    var hostRegex = new RegExp(host,"g");
+	    if ( !(hostRegex.test(parsed2.host.text)) ) return false;
 	}
 	if (parts.pathname.text !== 'WILDCARD') {
-	    if (parsed2.scheme.text !== parts.pathname.text) return false;
+	    var pathname = escapeRegExp(parts.pathname.text).replace(/WILDCARD/g,'\.*');
+	    var pathnameRegex = new RegExp(pathname,"g");
+	    if ( !(pathnameRegex.test(parsed2.pathname.text)) ) return false;
 	}
 	if (parts.search.text !== 'WILDCARD') {
-	    if (parsed2.search.text !== parts.search.text) return false;
+	    var search = escapeRegExp(parts.search.text).replace(/WILDCARD/g,'\.*');
+	    var searchRegex = new RegExp(search,"g");
+	    if ( !(searchRegex.test(parsed2.search.text)) ) return false;
 	}
-	if (parts.scheme.text !== 'WILDCARD') {
-	    if (parsed2.hash.text !== parts.hash.text) return false;
-	}
+	return true;
     }
 }
 
@@ -81,4 +85,8 @@ function deleteElements(selector) {
     function doDelete(nodes) {
         [].forEach.call(nodes, function(node) { node.remove(); });
     }
+}
+
+function escapeRegExp(string){
+  return string.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
 }
