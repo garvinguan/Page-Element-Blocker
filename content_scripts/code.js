@@ -13,7 +13,7 @@ chrome.storage.sync.get(null, function(options)
 				deleteElements(options.classOptions[matchedUrl]);
 
 			    var idUrls = Object.keys(options.idOptions);
-			    matchedUrl = testUrl(document.URL, classUrls);
+			    matchedUrl = testUrl(document.URL, idUrls);
 			    console.log(matchedUrl);
 			    if (matchedUrl)
 				deleteElements(options.idOptions[matchedUrl]);
@@ -29,38 +29,33 @@ function testUrl(url, urls) {
 }
 
 function urlToTest(input){
-    var count = 0;
-    var patched = input.replace(/\*/g, () => {
-	count++;
-	return 'WILDCARD';
-    });
+    var patched = input.replace(/\*/g, 'WILDCARD');
 
     var parts = URL.parse(patched);
 
+    function makeTest(str){
+        if (str === 'WILDCARD') return function(){ return true; };
+        var pattern = escapeRegExp(str).replace(/WILDCARD/g,'.*');
+        var regex = new RegExp('^' + pattern + '$', 'g');
+        return function(target){ return regex.test(target); };
+    }
+
+    var tests = {
+        scheme: makeTest(parts.scheme.text),
+        host: makeTest(parts.host.text),
+        pathname: makeTest(parts.pathname.text),
+        search: makeTest(parts.search.text)
+    };
+
     return function(url2) {
 	var parsed2 = URL.parse(url2);
-	if (parts.scheme.text !== 'WILDCARD') {
-	    var scheme = escapeRegExp(parts.scheme.text).replace(/WILDCARD/g,'.*');
-	    var schemeRegex = new RegExp(scheme,"g");
-	    if ( !(schemeRegex.test(parsed2.scheme.text)) ) return false;
-	}
-	if (parts.host.text !== 'WILDCARD') {
-	    var host = escapeRegExp(parts.host.text).replace(/WILDCARD/g,'\.*');
-	    var hostRegex = new RegExp(host,"g");
-	    if ( !(hostRegex.test(parsed2.host.text)) ) return false;
-	}
-	if (parts.pathname.text !== 'WILDCARD') {
-	    var pathname = escapeRegExp(parts.pathname.text).replace(/WILDCARD/g,'\.*');
-	    var pathnameRegex = new RegExp(pathname,"g");
-	    if ( !(pathnameRegex.test(parsed2.pathname.text)) ) return false;
-	}
-	if (parts.search.text !== 'WILDCARD') {
-	    var search = escapeRegExp(parts.search.text).replace(/WILDCARD/g,'\.*');
-	    var searchRegex = new RegExp(search,"g");
-	    if ( !(searchRegex.test(parsed2.search.text)) ) return false;
-	}
-	return true;
-    }
+        return (
+            tests.scheme(parsed2.scheme.text) &&
+            tests.host(parsed2.host.text) &&
+            tests.pathname(parsed2.pathname.text) &&
+		tests.search(parsed2.search.text)
+        );
+    };
 }
 
 function deleteElements(selector) {
