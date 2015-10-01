@@ -122,12 +122,12 @@ initOptionsPage = function() {
     restore_options();
     var saveButton = document.getElementById('save');
 
-    onUpdated = function() {
+    var onUpdated = function() {
         saveButton.removeAttribute("disabled");
         return saveButton.innerHTML = "Save Changes";
     };
 
-    saveOptions = function() {
+    var saveOptions = function() {
 	save_options();
         saveButton.disabled = true;
         return saveButton.innerHTML = "No Changes";

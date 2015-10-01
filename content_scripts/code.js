@@ -1,23 +1,26 @@
-var queryInfo = {
-    active: true,
-    currentWindow: true
-};
+chrome.storage.sync.get(null, function(options) {
+    console.log(options);
+    var classUrls = Object.keys(options.classOptions);
+    var matchedClassUrl = testUrl(document.URL, classUrls);
+    console.log("class match url", matchedClassUrl);
+    if (matchedClassUrl)
+    {
+	deleteElements(options.classOptions[matchedClassUrl]);
+    }
 
-chrome.storage.sync.get(null, function(options)
-			{
-			    console.log(options);
-			    var classUrls = Object.keys(options.classOptions);
-			    var matchedUrl = testUrl(document.URL, classUrls);
-			    console.log(matchedUrl);
-			    if (matchedUrl)
-				deleteElements(options.classOptions[matchedUrl]);
-
-			    var idUrls = Object.keys(options.idOptions);
-			    matchedUrl = testUrl(document.URL, idUrls);
-			    console.log(matchedUrl);
-			    if (matchedUrl)
-				deleteElements(options.idOptions[matchedUrl]);
-			});
+    if (options.idOptions[matchedClassUrl])
+    {
+	deleteElements(options.idOptions[matchedClassUrl]);
+    }
+    else
+    {
+	var idUrls = Object.keys(options.idOptions);
+	var matchedIdUrl = testUrl(document.URL, idUrls);
+	console.log("id match url", matchedIdUrl);
+	if (matchedIdUrl)
+	    deleteElements(options.idOptions[matchedIdUrl]);
+    }
+});
 
 function testUrl(url, urls) {
     var numUrls = urls.length;
@@ -51,8 +54,8 @@ function urlToTest(input){
 	var parsed2 = URL.parse(url2);
         return (
             tests.scheme(parsed2.scheme.text) &&
-            tests.host(parsed2.host.text) &&
-            tests.pathname(parsed2.pathname.text) &&
+		tests.host(parsed2.host.text) &&
+		tests.pathname(parsed2.pathname.text) &&
 		tests.search(parsed2.search.text)
         );
     };
@@ -83,5 +86,5 @@ function deleteElements(selector) {
 }
 
 function escapeRegExp(string){
-  return string.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
+    return string.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
 }

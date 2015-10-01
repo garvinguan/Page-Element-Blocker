@@ -1,14 +1,14 @@
 {
     "manifest_version": 2,
 
-    "name": "Getting started example",
-    "description": "This extension removes DOM elements",
+    "name": "Garblock",
+    "description": "This extension removes unwanted DOM elements",
     "version": "1.0",
     "options_page": "pages/options.html",
     "content_scripts": [
 	{
 	    "matches": ["<all_urls>"],
-	    "js": ["url.js","content_scripts/code.js"],
+	    "js": ["content_scripts/url.min.js","content_scripts/code.js"],
 	    "run_at": "document_start"
 	}
     ],
