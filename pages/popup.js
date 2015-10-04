@@ -29,10 +29,32 @@ function renderStatus(statusText) {
 }
 
 function save_options(errorCallback) {
-    var url = document.getElementById('urlToAdd').value.replace(/\s+/g, '');
-    var classPatterns = document.getElementById('classesToRemove').value.replace(/\s+/g, '');
-    var idPatterns = document.getElementById('idsToRemove').value.replace(/\s+/g, '');
+    var url = urlToAdd.value.replace(/\s+/g, '');
+    var classPatterns = classesToRemove.value.replace(/\s+/g, '');
+    var idPatterns = idsToRemove.value.replace(/\s+/g, '');
 
+    if ( !url )
+	return;
+    else {
+	if (classPatterns !== Options.classOptions[url]) {
+	    if (classPatterns)
+		classPatterns = appendSym(classPatterns,'.');
+	    Options.classOptions[url] = classPatterns;
+	}
+	if (idPatterns !== Options.idOptions[url]) {
+	    if (idPatterns)
+		idPatterns = appendSym(idPatterns,'#');
+	    Options.idOptions[url] = idPatterns;
+	}
+	chrome.storage.sync.set(Options, function() {
+            // Update status to let user know options were saved.
+            var status = document.getElementById('status');
+            status.textContent = 'Options saved.';
+            setTimeout(function() {
+		status.textContent = '';
+            }, 750);
+	});
+    }
     function appendSym(patterns,sym) {
 	var arrayOfPatterns = patterns.split(',');
 	var numPatterns = arrayOfPatterns.length;
@@ -45,29 +67,9 @@ function save_options(errorCallback) {
 	}
 	return arrayOfPatterns.join();
     }
-
-    if ( !url || (!classPatterns  && !idPatterns))
-	return error;
-    else {
-	if (classPatterns) {
-	    classPatterns = appendSym(classPatterns,'.');
-	    Options.classOptions[url] = classPatterns;
-	}
-	if (idPatterns) {
-	    idPatterns = appendSym(idPatterns,'#');
-	    Options.idOptions[url] = idPatterns;
-	}
-	chrome.storage.sync.set(Options, function() {
-            // Update status to let user know options were saved.
-            var status = document.getElementById('status');
-            status.textContent = 'Options saved.';
-            setTimeout(function() {
-		status.textContent = '';
-            }, 750);
-	});
-    }
 }
 var Options;
+
 document.addEventListener('DOMContentLoaded', function() {
     var saveButton = document.getElementById('save');
 
@@ -83,18 +85,27 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     saveButton.addEventListener("click", saveOptions);
 
-    var urlToAdd = document.getElementById('urlToAdd');
-    var classesToRemove = document.getElementById('classesToRemove');
-    var idsToRemove = document.getElementById('idsToRemove');
-
+    urlToAdd = document.getElementById('urlToAdd');
+    classesToRemove = document.getElementById('classesToRemove');
+    idsToRemove = document.getElementById('idsToRemove');
     getCurrentTabUrl(function(url) {
 	var parsedURL = URL.parse(url);
 	urlToAdd.value = parsedURL.scheme.text + "://" + parsedURL.host.text + '/*';
 	console.log(parsedURL);
 	chrome.storage.sync.get(null, function(items){
+	    console.log("getting settings");
 	    Options = items;
-	    classesToRemove.value = Options.classOptions[urlToAdd.value] ? Options.classOptions[urlToAdd.value] : '';
-	    idsToRemove.value = Options.idOptions[urlToAdd.value] ? Options.idOptions[urlToAdd.value] : '';
+	    if (Object.keys(Options).length > 0)
+	    {
+		classesToRemove.value = Options.classOptions[urlToAdd.value] ? Options.classOptions[urlToAdd.value] : '';
+		idsToRemove.value = Options.idOptions[urlToAdd.value] ? Options.idOptions[urlToAdd.value] : '';
+	    }
+	    else
+	    {
+		console.log("no stored settings");
+		Options.classOptions = {};
+		Options.idOptions = {};
+	    }
 	});
     });
 

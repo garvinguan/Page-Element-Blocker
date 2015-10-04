@@ -114,15 +114,16 @@ function restore_options() {
     chrome.storage.sync.get(null, function(items){
 	console.log("restoring options");
 	console.log(items);
-	restoreOptionRows(items);
+	if (Object.keys(items) === 0)
+	    restoreOptionRows(items);
     });
 };
 
 initOptionsPage = function() {
     restore_options();
-    var saveButton = document.getElementById('save');
+    saveButton = document.getElementById('save');
 
-    var onUpdated = function() {
+    onUpdated = function() {
         saveButton.removeAttribute("disabled");
         return saveButton.innerHTML = "Save Changes";
     };

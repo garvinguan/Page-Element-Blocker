@@ -1,36 +1,68 @@
 <!doctype html>
-<!--
- This page is shown when the extension button is clicked, because the
- "browser_action" field in manifest.json contains the "default_popup" key with
- value "popup.html".
- -->
 <html>
-  <head>
-    <title>Garblock Add Rule</title>
-    <style>
-      body {
-        font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
-        font-size: 100%;
-      }
-      #status {
-        /* avoid an excessively wide status text */
-        white-space: pre;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        max-width: 400px;
-      }
-    </style>
-    <script src="popup.js"></script>
-    <script src="../content_scripts/url.min.js"></script>
-  </head>
-  <body>
-      <div id="newOptions">
-	  <input type="text" id="urlToAdd" placeholder="Exclude classes">
-	  <input type="text" id="classesToRemove" placeholder="Exclude classes">
-	  <input type="text" id="idsToRemove" placeholder="Exclude classes">
-
-	  <div id="status"></div>
-	  <button id="save" disabled="true">No Changes</button>
-      </div>
-  </body>
+    <head>
+	<link rel="stylesheet" type="text/css" href="options.css">
+	<style>
+	 * {
+             margin: 0px;
+             padding: 0px;
+	 }
+	 #saveOptions {
+             margin-top: 5px; /* Match #exclusionAddButton */
+             margin-left: 5px;
+             float: right;
+	 }
+	 /* Make exclusionScrollBox smaller than on the options page, because there are likely to be fewer
+            matching rules, and the popup obscures the underlying page.
+	  */
+	 #exclusionScrollBox {
+             max-height: 124px;
+             min-height: 124px;
+	 }
+	 #endSpace { /* Leave space for the fixed footer. */
+             min-height: 40px;
+             max-height: 40px;
+	 }
+	</style>
+	<title>Garblock Add Rule</title>
+	<style>
+	 body {
+             font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+             font-size: 100%;
+	 }
+	 #status {
+             /* avoid an excessively wide status text */
+             white-space: pre;
+             text-overflow: ellipsis;
+             overflow: hidden;
+             max-width: 400px;
+	 }
+	</style>
+	<script src="popup.js"></script>
+	<script src="../content_scripts/url.min.js"></script>
+    </head>
+    <body>
+	<div id="includeScrollBox">
+	    <table>
+		<tr>
+		    <td><span class="includeHeaderText">Url</span></td>
+		    <td><span class="includeHeaderText">Classes</span></td>
+		</tr>
+		<tr class="includeIDRuleTemplateInstance">
+		    <td><input type="text" id="urlToAdd"></td>
+		    <td class="includeRulePassKeys"><input type="text" id="classesToRemove" placeholder="Classes to exclude"></td>
+		</tr>
+		<tr>
+		    <td></td>
+		    <td><span class="includeHeaderText">Ids</span></td>
+		</tr>
+		<tr class="includeIDRuleTemplateInstance">
+		    <td></td>
+		    <td class="includeRulePassKeys"><input type="text" id="idsToRemove" placeholder="Ids to exclude"></td>
+		</tr>
+	    </table>
+	    <div id="status"></div>
+	    <button id="save" disabled="true">Save</button>
+	</div>
+    </body>
 </html>
