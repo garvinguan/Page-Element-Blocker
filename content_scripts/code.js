@@ -53,6 +53,9 @@ function urlToTest(input){
         search: makeTest(parts.search.text)
     };
 
+    if (/^\/WILDCARD$/g.test(parts.pathname.text))
+	tests.search = function(t) { return true; };
+
     return function(url2) {
 	var parsed2 = URL.parse(url2);
         return (

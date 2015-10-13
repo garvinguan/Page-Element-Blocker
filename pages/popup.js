@@ -62,7 +62,7 @@ function save_options(errorCallback) {
 	{
 	    if(arrayOfPatterns[i].charAt(0) != sym)
 	    {
-		arrayOfPatterns[i] = sym + arrayOfPatterns;
+		arrayOfPatterns[i] = sym + arrayOfPatterns[i];
 	    }
 	}
 	return arrayOfPatterns.join();
