@@ -94,7 +94,7 @@ function restoreOptionRows(items) {
     {
 	add_pattern({
 	    classURLpattern: allKeys[i],
-	    classToRemove: items.classOptions[allKeys[i]]
+	    classToRemove: items.classOptions[allKeys[i]].replace(/./g, '')
 	},'includeClassRules');
     }
 
@@ -103,7 +103,7 @@ function restoreOptionRows(items) {
     {
 	add_pattern({
 	    idURLpattern: allKeys[i],
-	    idToRemove: items.idOptions[allKeys[i]]
+	    idToRemove: items.idOptions[allKeys[i]].replace(/#/g, '')
 	},'includeIDRules');
     }
 }
