@@ -1,22 +1,23 @@
 {
     "manifest_version": 2,
-
-    "name": "Garblock",
-    "description": "This extension removes unwanted DOM elements",
+    "name": "Page Element Blocker",
+    "description": "Blocks unwanted page elements. Customize every page the way you want it",
     "version": "1.0",
     "options_page": "pages/options.html",
+    "icons": {  "16": "icons/icon_16.png",
+	       "128": "icons/icon_128.png" },
     "content_scripts": [
 	{
 	    "matches": ["<all_urls>"],
-	    "js": ["content_scripts/url.min.js","content_scripts/code.js"],
+	    "js": ["content_scripts/code.js",
+		   "content_scripts/url.min.js"],
 	    "run_at": "document_start"
 	}
     ],
-
     "browser_action": {
-	"default_icon": "images/icon.png",
+	"default_icon": "icons/icon_16.png",
 	"default_popup": "pages/popup.html",
-	"default_title": "Garvin Click here!"
+	"default_title": "Page Element Blocker"
     },
     "permissions": [
 	"tabs",

@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html>
-    <head><title>My Test Extension Options</title></head>
+    <head>
+	<title>Page Element Blocker Options</title>
+	<meta charset="UTF-8">
+    </head>
     <body>
 
 	<div id="wrapper">
-	    <header>DOM out</header>
+	    <header>Page Element Blocker Options</header>
 	    <table id="options">
 		<tr>
 		    <td class="caption">Classes to remove</td>
@@ -13,13 +16,16 @@
 			    <div class="example">
 				"Patterns" are URL regular expressions;
 				additionally, "*" matches any zero or more characters.
+				<br>
+				<br>
+				Keys should be comma separated if there are more than one.
 			    </div>
 			</div>
 			<div id="includeScrollBox">
 			    <table id="includeClassRules">
 				<tbody><tr>
 				    <td><span class="includeHeaderText">Patterns</span></td>
-				    <td><span class="includeHeaderText">Classes</span></td>
+				    <td class="includeRulePassKeys"><span class="includeHeaderText">Classes</span></td>
 				</tr>
 				</tbody></table>
 			    <template id="includeClassRulesTemplate">
@@ -40,13 +46,16 @@
 			    <div class="example">
 				"Patterns" are URL regular expressions;
 				additionally, "*" matches any zero or more characters.
+				<br>
+				<br>
+				Keys should be comma separated if there are more than one.
 			    </div>
 			</div>
 			<div id="includeScrollBox">
 			    <table id="includeIDRules">
 				<tbody><tr>
 				    <td><span class="includeHeaderText">Patterns</span></td>
-				    <td><span class="includeHeaderText">IDs</span></td>
+				    <td class="includeRulePassKeys"><span class="includeHeaderText">IDs</span></td>
 				</tr>
 				</tbody></table>
 				<template id="includeIDRulesTemplate">

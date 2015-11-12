@@ -77,8 +77,6 @@ function save_options() {
     }
     options['idOptions']=idOptions;
     options['classOptions']=classOptions;
-    console.log('saving options');
-    console.log(options);
     chrome.storage.sync.set(options, function() {
         // Update status to let user know options were saved.
         var status = document.getElementById('status');
@@ -112,14 +110,12 @@ function restoreOptionRows(items) {
 
 function restore_options() {
     chrome.storage.sync.get(null, function(items){
-	console.log("restoring options");
-	console.log(items);
-	if (Object.keys(items) === 0)
+	if (Object.keys(items).length !== 0)
 	    restoreOptionRows(items);
     });
 };
 
-initOptionsPage = function() {
+function initOptionsPage() {
     restore_options();
     saveButton = document.getElementById('save');
 
@@ -162,4 +158,4 @@ initOptionsPage = function() {
     });
 };
 
-document.addEventListener("DOMContentLoaded", initOptionsPage);
+initOptionsPage();

@@ -1,10 +1,4 @@
-/**
- * Get the current URL.
- *
- * @param {function(string)} callback - called when the URL of the current tab
- *   is found.
- */
-function getCurrentTabUrl(callback) {
+function initBrowserAction(callback) {
     var queryInfo = {
 	active: true,
 	currentWindow: true
@@ -13,7 +7,6 @@ function getCurrentTabUrl(callback) {
     chrome.tabs.query(queryInfo, function(tabs) {
 	var tab = tabs[0];
 	var url = tab.url;
-	console.assert(typeof url == 'string', 'tab.url should be a string');
 	callback(url);
     });
 }
@@ -37,14 +30,22 @@ function save_options(errorCallback) {
 	return;
     else {
 	if (classPatterns !== Options.classOptions[url]) {
-	    if (classPatterns)
+	    if (classPatterns) {
 		classPatterns = appendSym(classPatterns,'.');
-	    Options.classOptions[url] = classPatterns;
+		Options.classOptions[url] = classPatterns;
+	    }
+	    else {
+		delete Options.classOptions[url];
+	    }
 	}
 	if (idPatterns !== Options.idOptions[url]) {
-	    if (idPatterns)
+	    if (idPatterns) {
 		idPatterns = appendSym(idPatterns,'#');
-	    Options.idOptions[url] = idPatterns;
+		Options.idOptions[url] = idPatterns;
+	    }
+	    else {
+		delete Options.idOptions[url];
+	    }
 	}
 	chrome.storage.sync.set(Options, function() {
             // Update status to let user know options were saved.
@@ -88,12 +89,10 @@ document.addEventListener('DOMContentLoaded', function() {
     urlToAdd = document.getElementById('urlToAdd');
     classesToRemove = document.getElementById('classesToRemove');
     idsToRemove = document.getElementById('idsToRemove');
-    getCurrentTabUrl(function(url) {
+    initBrowserAction(function(url) {
 	var parsedURL = URL.parse(url);
 	urlToAdd.value = parsedURL.scheme.text + "://" + parsedURL.host.text + '/*';
-	console.log(parsedURL);
 	chrome.storage.sync.get(null, function(items){
-	    console.log("getting settings");
 	    Options = items;
 	    if (Object.keys(Options).length > 0)
 	    {
@@ -102,7 +101,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	    }
 	    else
 	    {
-		console.log("no stored settings");
 		Options.classOptions = {};
 		Options.idOptions = {};
 	    }
