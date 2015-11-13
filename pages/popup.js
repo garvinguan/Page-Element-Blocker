@@ -7,16 +7,6 @@ function initBrowserAction(initOptions) {
     });
 }
 
-var onUpdated = function() {
-    var saveButton = document.getElementById('save');
-    saveButton.removeAttribute("disabled");
-    return saveButton.innerHTML = "Save Changes";
-};
-
-function renderStatus(statusText) {
-    document.getElementById('status').textContent = statusText;
-}
-
 function save_options(errorCallback) {
     var url = urlToAdd.value.replace(/\s+/g, '');
     var classPatterns = classesToRemove.value.replace(/\s+/g, '');
@@ -68,7 +58,7 @@ function save_options(errorCallback) {
 var Options;
 
 document.addEventListener('DOMContentLoaded', function() {
-    var saveButton = document.getElementById('save');
+    var saveButton = document.getElementById('saveOptions');
 
     var onUpdated = function() {
         saveButton.removeAttribute("disabled");
@@ -85,15 +75,18 @@ document.addEventListener('DOMContentLoaded', function() {
     urlToAdd = document.getElementById('urlToAdd');
     classesToRemove = document.getElementById('classesToRemove');
     idsToRemove = document.getElementById('idsToRemove');
+    console.log("initBrowserAction");
     initBrowserAction(function(url) {
+	console.log("in initBrowserAction");
 	var parsedURL = URL.parse(url);
 	urlToAdd.value = parsedURL.scheme.text + "://" + parsedURL.host.text + '/*';
+	console.log(urlToAdd.value);
 	chrome.storage.sync.get(null, function(items){
 	    Options = items;
 	    if (Object.keys(Options).length > 0)
 	    {
-		classesToRemove.value = Options.classOptions[urlToAdd.value] ? Options.classOptions[urlToAdd.value] : '';
-		idsToRemove.value = Options.idOptions[urlToAdd.value] ? Options.idOptions[urlToAdd.value] : '';
+		classesToRemove.value = Options.classOptions[urlToAdd.value] ? Options.classOptions[urlToAdd.value].replace(/\./g, '') : '';
+		idsToRemove.value = Options.idOptions[urlToAdd.value] ? Options.idOptions[urlToAdd.value].replace(/#/g, '') : '';
 	    }
 	    else
 	    {

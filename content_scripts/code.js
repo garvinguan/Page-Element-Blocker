@@ -1,10 +1,8 @@
 chrome.storage.sync.get(null, function(options) {
-    console.log(options);
     if (Object.keys(options).length>0)
     {
 	var classUrls = Object.keys(options.classOptions);
 	var matchedClassUrl = testUrl(document.URL, classUrls);
-	console.log("class match url", matchedClassUrl);
 	if (matchedClassUrl)
 	{
 	    deleteElements(options.classOptions[matchedClassUrl]);
@@ -18,7 +16,6 @@ chrome.storage.sync.get(null, function(options) {
 	{
 	    var idUrls = Object.keys(options.idOptions);
 	    var matchedIdUrl = testUrl(document.URL, idUrls);
-	    console.log("id match url", matchedIdUrl);
 	    if (matchedIdUrl)
 		deleteElements(options.idOptions[matchedIdUrl]);
 	}
@@ -69,7 +66,6 @@ function urlToTest(input){
 
 function deleteElements(selector) {
     // in case the content script was injected after the page is partially loaded
-    console.log("deleting selectors ",selector);
     if (!selector) return;
     doDelete(document.querySelectorAll(selector));
 

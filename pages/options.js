@@ -1,10 +1,7 @@
-function add_pattern(rule, identifier) {
-    if (identifier==='includeClassRules')
-	add_pattern_row(rule,identifier,['classURLpattern','classToRemove']);
-    else
-	add_pattern_row(rule,identifier,['idURLpattern','idToRemove']);
-
-}
+function onUpdated() {
+        saveButton.removeAttribute("disabled");
+        return saveButton.innerHTML = "Save Changes";
+};
 
 function add_pattern_row(rule, identifier,ref) {
     var content, row, field, element, ref1, event;
@@ -27,6 +24,14 @@ function add_pattern_row(rule, identifier,ref) {
         onUpdated();
     }));
     includeRulesTable.appendChild(row);
+}
+
+function add_pattern(rule, identifier) {
+    if (identifier==='includeClassRules')
+	add_pattern_row(rule,identifier,['classURLpattern','classToRemove']);
+    else
+	add_pattern_row(rule,identifier,['idURLpattern','idToRemove']);
+
 }
 
 function save_options() {
@@ -94,7 +99,7 @@ function restoreOptionRows(items) {
     {
 	add_pattern({
 	    classURLpattern: allKeys[i],
-	    classToRemove: items.classOptions[allKeys[i]].replace(/./g, '')
+	    classToRemove: items.classOptions[allKeys[i]].replace(/\./g, '')
 	},'includeClassRules');
     }
 
@@ -117,12 +122,7 @@ function restore_options() {
 
 function initOptionsPage() {
     restore_options();
-    saveButton = document.getElementById('save');
-
-    onUpdated = function() {
-        saveButton.removeAttribute("disabled");
-        return saveButton.innerHTML = "Save Changes";
-    };
+    saveButton = document.getElementById('saveOptions');
 
     var saveOptions = function() {
 	save_options();

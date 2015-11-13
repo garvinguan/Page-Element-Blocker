@@ -221,8 +221,7 @@ input.classURLpattern, input.idURLpattern, input.idToRemove, input.classToRemove
 #footer, #footerTable, #footerTableData {
   width: 100%;
 }
-#endSpace {
-  /* Leave space for the fixed footer. */
+#bottomBar {
   min-height: 30px;
   max-height: 30px;
 }
