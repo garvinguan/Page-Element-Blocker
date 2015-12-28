@@ -1,27 +1,3 @@
-chrome.storage.sync.get(null, function(options) {
-    if (Object.keys(options).length>0)
-    {
-	var classUrls = Object.keys(options.classOptions);
-	var matchedClassUrl = testUrl(document.URL, classUrls);
-	if (matchedClassUrl)
-	{
-	    deleteElements(options.classOptions[matchedClassUrl]);
-	}
-
-	if (options.idOptions[matchedClassUrl])
-	{
-	    deleteElements(options.idOptions[matchedClassUrl]);
-	}
-	else
-	{
-	    var idUrls = Object.keys(options.idOptions);
-	    var matchedIdUrl = testUrl(document.URL, idUrls);
-	    if (matchedIdUrl)
-		deleteElements(options.idOptions[matchedIdUrl]);
-	}
-    }
-});
-
 function testUrl(url, urls) {
     var numUrls = urls.length;
     for (var i=0; i<numUrls; i++) {
@@ -65,7 +41,7 @@ function urlToTest(input){
 }
 
 function deleteElements(selector) {
-    // in case the content script was injected after the page is partially loaded
+    // in case the content script was injected before the page is partially loaded
     if (!selector) return;
     doDelete(document.querySelectorAll(selector));
 
@@ -92,3 +68,27 @@ function deleteElements(selector) {
 function escapeRegExp(string){
     return string.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
 }
+
+chrome.storage.sync.get(null, function(options) {
+    if (Object.keys(options).length>0)
+    {
+	var classUrls = Object.keys(options.classOptions);
+	var matchedClassUrl = testUrl(document.URL, classUrls);
+	if (matchedClassUrl)
+	{
+	    deleteElements(options.classOptions[matchedClassUrl]);
+	}
+
+	if (options.idOptions[matchedClassUrl])
+	{
+	    deleteElements(options.idOptions[matchedClassUrl]);
+	}
+	else
+	{
+	    var idUrls = Object.keys(options.idOptions);
+	    var matchedIdUrl = testUrl(document.URL, idUrls);
+	    if (matchedIdUrl)
+		deleteElements(options.idOptions[matchedIdUrl]);
+	}
+    }
+});

@@ -75,7 +75,6 @@ document.addEventListener('DOMContentLoaded', function() {
     urlToAdd = document.getElementById('urlToAdd');
     classesToRemove = document.getElementById('classesToRemove');
     idsToRemove = document.getElementById('idsToRemove');
-    console.log("initBrowserAction");
     initBrowserAction(function(url) {
 	console.log("in initBrowserAction");
 	var parsedURL = URL.parse(url);
@@ -86,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	    if (Object.keys(Options).length > 0)
 	    {
 		classesToRemove.value = Options.classOptions[urlToAdd.value] ? Options.classOptions[urlToAdd.value].replace(/\./g, '') : '';
-		idsToRemove.value = Options.idOptions[urlToAdd.value] ? Options.idOptions[urlToAdd.value].replace(/#/g, '') : '';
+		idsToRemove.value = Options.idOptions[urlToAdd.value] ? Options.idOptions[urlToAdd.value].replace(/\#/g, '') : '';
 	    }
 	    else
 	    {

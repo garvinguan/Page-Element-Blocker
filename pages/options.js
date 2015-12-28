@@ -31,55 +31,45 @@ function add_pattern(rule, identifier) {
 	add_pattern_row(rule,identifier,['classURLpattern','classToRemove']);
     else
 	add_pattern_row(rule,identifier,['idURLpattern','idToRemove']);
-
 }
 
-function save_options() {
-    var templateInstances = document.querySelectorAll('.includeClassRuleTemplateInstance'),
-	idUrl, idPatterns, classUrl, classPatterns, options = {}, idOptions = {}, classOptions = {};
-
-    for(var i=0;i<templateInstances.length; i++){
-	classUrl = templateInstances[i].getElementsByClassName('classURLpattern')[0].value;
-	classPatterns = templateInstances[i].getElementsByClassName('classToRemove')[0].value.replace(/\s+/g, '');
-	if(classPatterns.length < 1) continue;
-	classPatterns = classPatterns.split(',');
-	var classPattern = "";
-	var numPatterns = classPatterns.length-1;
+function storeOptionsInArray(elements, selector, urls, rules){
+    var options = {}, url, patterns;
+    for(var i=0;i<elements.length; i++){
+	url = elements[i].getElementsByClassName(urls)[0].value;
+	patterns = elements[i].getElementsByClassName(rules)[0].value.replace(/\s+/g, '');
+	if(patterns.length < 1) continue;
+	patterns = patterns.split(',');
+	var pattern = "";
+	var numPatterns = patterns.length-1;
 	for (var j=0;j<numPatterns; j++){
-	    if (classPatterns[j].substring(0,1) !== '.')
-		classPattern+='.' + classPatterns[j] + ',';
+	    if (patterns[j].substring(0,1) !== selector)
+		pattern+=selector + patterns[j] + ',';
 	    else
-		classPattern+= classPatterns[j] + ',';
+		pattern+= patterns[j] + ',';
 	}
-	if (classPatterns[numPatterns].substring(0,1) !== '.')
-	    classPattern+='.' + classPatterns[numPatterns];
+	if (patterns[numPatterns].substring(0,1) !== selector)
+	    pattern+=selector + patterns[numPatterns];
 	else
-	    classPattern+= classPatterns[numPatterns];
+	    pattern+= patterns[numPatterns];
 
-	classOptions[classUrl]=classPattern;
+	options[url]=pattern;
     }
+    return options;
+}
+function save_options() {
+    var options = {}, idOptions = {}, classOptions = {};
 
+    // store options in array
+    // get the input boxes with class options
+    var templateInstances = document.querySelectorAll('.includeClassRuleTemplateInstance');
+    classOptions = storeOptionsInArray(templateInstances, '.', 'classURLpattern','classToRemove');
+
+    // get the input boxes with id options
     templateInstances = document.querySelectorAll('.includeIDRuleTemplateInstance');
-    for(i=0;i<templateInstances.length; i++){
-	idUrl = templateInstances[i].getElementsByClassName('idURLpattern')[0].value;
-	idPatterns = templateInstances[i].getElementsByClassName('idToRemove')[0].value.replace(/\s+/g, '');
-	if(idPatterns.length < 1) continue;
-	idPatterns = idPatterns.split(',');
-	var idPattern = "";
-	numPatterns = idPatterns.length-1;
-	for (j=0;j<numPatterns; j++){
-	    if (idPatterns[j].substring(0,1) !== '#')
-		idPattern += '#' + idPatterns[j] + ',';
-	    else
-		idPattern += idPatterns[j] + ',';
-	}
-	if (idPatterns[numPatterns].substring(0,1) !== '#')
-	    idPattern+='#' + idPatterns[numPatterns];
-	else
-	    idPattern+= idPatterns[numPatterns];
+    idOptions = storeOptionsInArray(templateInstances, '#', 'idURLpattern', 'idToRemove');
 
-	idOptions[idUrl] = idPattern;
-    }
+    // store class options and id options in options for storage
     options['idOptions']=idOptions;
     options['classOptions']=classOptions;
     chrome.storage.sync.set(options, function() {
