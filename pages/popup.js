@@ -78,6 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initBrowserAction(function(url) {
 	console.log("in initBrowserAction");
 	var parsedURL = URL.parse(url);
+	// TODO: query in storage to get the url in storage
 	urlToAdd.value = parsedURL.scheme.text + "://" + parsedURL.host.text + '/*';
 	console.log(urlToAdd.value);
 	chrome.storage.sync.get(null, function(items){

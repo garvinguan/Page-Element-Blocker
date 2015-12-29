@@ -33,12 +33,8 @@ function add_pattern(rule, identifier) {
 	add_pattern_row(rule,identifier,['idURLpattern','idToRemove']);
 }
 
-function storeOptionsInArray(elements, selector, urls, rules){
-    var options = {}, url, patterns;
-    for(var i=0;i<elements.length; i++){
-	url = elements[i].getElementsByClassName(urls)[0].value;
-	patterns = elements[i].getElementsByClassName(rules)[0].value.replace(/\s+/g, '');
-	if(patterns.length < 1) continue;
+function concatenatePatterns(patterns, selector) {
+	if(patterns.length < 1) return;
 	patterns = patterns.split(',');
 	var pattern = "";
 	var numPatterns = patterns.length-1;
@@ -52,8 +48,17 @@ function storeOptionsInArray(elements, selector, urls, rules){
 	    pattern+=selector + patterns[numPatterns];
 	else
 	    pattern+= patterns[numPatterns];
+}
+function storeOptionsInArray(elements, selector, urls, rules){
+    var options = {}, url, rest_of_the_url = {}, urlparts, rule;
+    for(var i=0;i<elements.length; i++){
+	urlparts = URL.parse(elements[i].getElementsByClassName(urls)[0].value);
+	rule = concatenatePatterns(elements[i].getElementsByClassName(rules)[0].value.replace(/\s+/g, ''),selector);
 
-	options[url]=pattern;
+	console.log(urlparts);
+	url = urlparts.scheme.text + "://" + urlparts.host.text;
+	rest_of_the_url[urlparts.pathname.text + urlparts.search.text + "*"] = rule;
+	options[url] = rest_of_the_url;
     }
     return options;
 }
