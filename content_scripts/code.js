@@ -72,6 +72,7 @@ function escapeRegExp(string){
 chrome.storage.sync.get(null, function(options) {
     if (Object.keys(options).length>0)
     {
+	// TODO: fix this section to check both classes and ids
 	var classUrls = Object.keys(options.classOptions);
 	var matchedClassUrl = testUrl(document.URL, classUrls);
 	if (matchedClassUrl)

@@ -57,7 +57,7 @@ function storeOptionsInArray(elements, selector, urls, rules){
 
 	console.log(urlparts);
 	url = urlparts.scheme.text + "://" + urlparts.host.text;
-	rest_of_the_url[urlparts.pathname.text + urlparts.search.text + "*"] = rule;
+	rest_of_the_url[urlparts.pathname.text + urlparts.search.text] = rule;
 	options[url] = rest_of_the_url;
     }
     return options;
