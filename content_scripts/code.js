@@ -1,9 +1,9 @@
-function testUrl(url, urls) {
-    var numUrls = urls.length;
+function testUrl(url, options) {
+    var numUrls = options.length;
     for (var i=0; i<numUrls; i++) {
-	var urlMatcher = urlToTest(urls[i]);
+	var urlMatcher = urlToTest(options[i]);
 	if (urlMatcher(url))
-	    return urls[i];
+	    return options[i];
     }
 }
 
@@ -73,7 +73,7 @@ chrome.storage.sync.get(null, function(options) {
     if (Object.keys(options).length>0)
     {
 	// TODO: fix this section to check both classes and ids
-	var classUrls = Object.keys(options.classOptions);
+	var classUrls = options.classOptions;
 	var matchedClassUrl = testUrl(document.URL, classUrls);
 	if (matchedClassUrl)
 	{

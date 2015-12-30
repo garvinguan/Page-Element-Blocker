@@ -55,7 +55,31 @@ function save_options(errorCallback) {
 	return arrayOfPatterns.join();
     }
 }
-var Options;
+
+function retrieveOption(option, url) {
+    var urlKeys = Options[option][url.scheme.text + "://" + url.host.text];
+    if (urlKeys)
+    {
+	var allKeys = Object.keys(urlKeys),
+	    largestUrlIndex = 0,
+	    largestUrlLength = 0;
+	for (var i=0; i<allKeys.length; i++) {
+	    var urlRegex = new RegExp('^' + allKeys[i] + '$','g'),
+		urlKey = url.pathname.text + url.search.text;
+	    if (urlRegex.test(urlKey)) {
+		if (largestUrlLength < urlKey.length) {
+		    largestUrlLength = urlKey.length;
+		    largestUrlIndex = i;
+		}
+	    }
+	}
+	return largestUrlLength > 0 ? Options[option][allKeys[largestUrlIndex]] : '';
+    }
+    else {
+	return '';
+    }
+}
+var Options, urlToAdd, classesToRemove, idsToRemove;
 
 document.addEventListener('DOMContentLoaded', function() {
     var saveButton = document.getElementById('saveOptions');
@@ -79,19 +103,21 @@ document.addEventListener('DOMContentLoaded', function() {
 	console.log("in initBrowserAction");
 	var parsedURL = URL.parse(url);
 	// TODO: query in storage to get the url in storage
-	urlKey = parsedURL.scheme.text + "://" + parsedURL.host.text;
-	console.log(urlKey.value);
 	chrome.storage.sync.get(null, function(items){
 	    Options = items;
 	    if (Object.keys(Options).length > 0)
 	    {
-		classesToRemove.value = Options.classOptions[urlToAdd.value] ? Options.classOptions[urlToAdd.value].replace(/\./g, '') : '';
-		idsToRemove.value = Options.idOptions[urlToAdd.value] ? Options.idOptions[urlToAdd.value].replace(/\#/g, '') : '';
+		// look for the entry in Options.
+		classesToRemove.value = retrieveOption('classOptions', parsedURL);
+		idsToRemove.value = retrieveOption('idOptions',parsedURL);
 	    }
 	    else
 	    {
 		Options.classOptions = {};
 		Options.idOptions = {};
+		var urlKey = parsedURL.scheme.text + "://" + parsedURL.host.text;
+		console.log(urlKey.value);
+		urlToAdd.value = urlKey;
 	    }
 	});
     });
