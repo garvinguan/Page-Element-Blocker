@@ -6,86 +6,82 @@
 	<link rel="stylesheet" type="text/css" href="options.css">
     </head>
     <body>
-
 	<div id="wrapper">
 	    <header>Page Element Blocker Options</header>
-	    <table id="options">
-		<tr>
-		    <td class="caption">Classes to remove</td>
-		    <td>
-			<div class="help">
-			    <div class="example">
-				"Patterns" are URL regular expressions;
-				additionally, "*" matches any zero or more characters.
-				<br>
-				<br>
-				Keys should be comma separated if there are more than one.
-			    </div>
+	    <div id="options">
+		<div class="help">
+		    <div class="example">
+			"Patterns" are URL regular expressions;
+			additionally, "*" matches any zero or more characters.
+			<br>
+			<br>
+			Keys should be comma separated if there are more than one.
+		    </div>
+		</div>
+		<div id="includeScrollBox">
+		    <div class="rules">
+			<div class="Header">
+			    <div class="includeHeaderText">Urls</div>
+			    <div class="includeHeaderText">Rules</div>
 			</div>
-			<div id="includeScrollBox">
-			    <table id="includeClassRules">
-				<tbody><tr>
-				    <td><span class="includeHeaderText">Patterns</span></td>
-				    <td class="includeRulePassKeys"><span class="includeHeaderText">Classes</span></td>
-				</tr>
-				</tbody></table>
-			    <template id="includeClassRulesTemplate">
-				<tr class="includeClassRuleTemplateInstance">
-				    <td><input type="text" class="classURLpattern" placeholder="URL pattern"></td>
-				    <td class="includeRulePassKeys"><input type="text" class="classToRemove" placeholder="Exclude keys"></td>
-				    <td class="includeRemoveButton"><input type="button" class="includeRemoveButtonButton" value="✖"></td>
-				</tr>
-			    </template>
-			</div>
-			<button id="includeClassAddButton">Add Pattern</button>
-		    </td>
-		</tr>
-		<tr>
-		    <td class="caption">IDs to remove</td>
-		    <td>
-			<div class="help">
-			    <div class="example">
-				"Patterns" are URL regular expressions;
-				additionally, "*" matches any zero or more characters.
-				<br>
-				<br>
-				Keys should be comma separated if there are more than one.
-			    </div>
-			</div>
-			<div id="includeScrollBox">
-			    <table id="includeIDRules">
-				<tbody><tr>
-				    <td><span class="includeHeaderText">Patterns</span></td>
-				    <td class="includeRulePassKeys"><span class="includeHeaderText">IDs</span></td>
-				</tr>
-				</tbody></table>
-				<template id="includeIDRulesTemplate">
-				    <tr class="includeIDRuleTemplateInstance">
-					<td><input type="text" class="idURLpattern" placeholder="URL pattern"></td>
-					<td class="includeRulePassKeys"><input type="text" class="idToRemove" placeholder="Exclude keys"></td>
-					<td class="includeRemoveButton"><input type="button" class="includeRemoveButtonButton" value="✖"></td>
-				    </tr>
-				</template>
-			</div>
-			<button id="includeIDAddButton">Add Pattern</button>
-		    </td>
-		</tr>
-	    </table>
+			<table class="rule">
+			    <tr>
+				<td><input type="text" class="url" placeholder="URL pattern" value="http://writequit.org/1org1/#8b0ea675-db0a-471b-9e11-cfc8d56de8c3"></td>
+				<td class="includeRulePassKeys"><input type="text" class="classToRemove" placeholder="Exclude Classes" value="class1"></td>
+				<td class="includeRemoveButton"><input type="button" class="includeRemoveButtonButton" value="✖"></td>
+			    </tr>
+			    <tr>
+				<td></td>
+				<td class="includeRulePassKeys"><input type="text" class="idToRemove" placeholder="Exclude Ids" value="id1"></td>
+				<td class="includeRemoveButton"><input type="button" class="includeRemoveButtonButton" value="✖"></td>
+			    </tr>
+			</table>
+			<table class="rule">
+			    <tr>
+				<td><input type="text" class="url" placeholder="URL pattern" value="http://writequit.org/org/#8b0ea675-db0a-471b-9e11-cfc8d56de8c3"></td>
+				<td class="includeRulePassKeys"><input type="text" class="classToRemove" placeholder="Exclude Classes" value="class1"></td>
+				<td class="includeRemoveButton"><input type="button" class="includeRemoveButtonButton" value="✖"></td>
+			    </tr>
+			    <tr>
+				<td></td>
+				<td class="includeRulePassKeys"><input type="text" class="idToRemove" placeholder="Exclude Ids" value="id1"></td>
+				<td class="includeRemoveButton"><input type="button" class="includeRemoveButtonButton" value="✖"></td>
+			    </tr>
+			</table>
+		    </div>
+		    <button id="includeRuleAddButton">Add Pattern</button>
+		    <template id="ruleTemplate">
+			<table class="rule">
+			    <tr>
+				<td><input type="text" class="url" placeholder="URL pattern"></td>
+				<td class="includeRulePassKeys"><input type="text" class="classToRemove" placeholder="Exclude Classes"></td>
+				<td class="includeRemoveButton"><input type="button" class="includeRemoveButtonButton" value="✖"></td>
+			    </tr>
+			    <tr>
+				<td></td>
+				<td class="includeRulePassKeys"><input type="text" class="idToRemove" placeholder="Exclude Ids"></td>
+				<td class="includeRemoveButton"><input type="button" class="includeRemoveButtonButton" value="✖"></td>
+			    </tr>
+			</table>
+		    </template>
+		</div>
+	    </div>
 	</div>
 	<div id="bottomBar">
 	    <div id="footer">
 		<div id="footerWrapper">
 		    <table id="footerTable">
-			<tbody><tr>
+			<tr>
 			    <td id="saveOptionsTableData" nowrap="">
 				<div id="status"></div>
 				<button id="saveOptions" disabled="true">No Changes</button>
 			    </td>
 			</tr>
-			</tbody></table>
+		    </table>
 		</div>
 	    </div>
 	</div>
+	<script src="../content_scripts/url.js"></script>
 	<script src="options.js"></script>
     </body>
 </html>

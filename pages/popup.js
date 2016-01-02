@@ -73,11 +73,13 @@ function retrieveOption(option, url) {
 		}
 	    }
 	}
-	return largestUrlLength > 0 ? Options[option][allKeys[largestUrlIndex]] : '';
+	if (largestUrlLength > 0) {
+	    var matchingUrl = allKeys[largestUrlIndex],
+		rule =  Options[option][allKeys[largestUrlIndex]];
+	    return {"url": matchingUrl, "rule": rule};
+	}
     }
-    else {
-	return '';
-    }
+    return {"url": url.scheme.text + "://" + url.host.text, "rule": ''};
 }
 var Options, urlToAdd, classesToRemove, idsToRemove;
 
@@ -108,6 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	    if (Object.keys(Options).length > 0)
 	    {
 		// look for the entry in Options.
+		var options = retrieveOption(parsedURL);
 		classesToRemove.value = retrieveOption('classOptions', parsedURL);
 		idsToRemove.value = retrieveOption('idOptions',parsedURL);
 	    }
