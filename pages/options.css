@@ -150,9 +150,9 @@ td.booleanOption { font-size: 12px; }
 #includeScrollBox {
     overflow: scroll;
     overflow-x: hidden;
-    overflow-y: auto;
+    /* overflow-y: auto; */
     /* Each include rule is about 30px, so this allows 7 before scrolling */
-    max-height: 215px;
+    max-height: 815px;
     min-height: 75px;
     border-radius: 2px;
     color: #444;

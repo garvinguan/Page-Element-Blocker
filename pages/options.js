@@ -3,40 +3,45 @@ function onUpdated() {
     return saveButton.innerHTML = "Save Changes";
 };
 
-function create_rule(rule, ruleTemplate,ref) {
-    var content, row, field, element, ref1, event;
-    var includeRulesTable = document.getElementById(template);
-    row = document.importNode(ruleTemplate, true);
+function add_rule(ruleData, ruleTemplate,ref) {
+    var content, rule, field, element, event, ref1 = ["input", "change"],
+	rulesArea = document.getElementById('rules'),
+	ruleHtml = document.querySelector('#'+ruleTemplate).content;
+
+    rule = document.importNode(ruleHtml, true);
     for (var i = 0, len = ref.length; i < len; i++) {
 	field = ref[i];
-	element = row.querySelector("." + field);
-	element.value = rule[field];
-	ref1 = ["input", "change"];
+	element = rule.querySelector("." + field);
+	element.value = ruleData[field];
 	for (var j = 0, len1 = ref1.length; j < len1; j++) {
 	    event = ref1[j];
 	    element.addEventListener(event, onUpdated);
 	}
     }
-    row.querySelector(".includeRemoveButton").addEventListener("click", (function(event) {
+    rule.querySelector(".includeRemoveButton").addEventListener("click", (function(event) {
 	rule = event.target.parentNode.parentNode;
 	rule.parentNode.removeChild(rule);
 	onUpdated();
     }));
-    includeRulesTable.appendChild(row);
+    rulesArea.appendChild(rule);
 }
 
 function restore_rules(rules, ruleTemplate) {
     // for each rule (second part of the url) add event handlers and create a rule section
     var allUrls = Object.keys(rules),
-	numUrls = allUrls.length,
-	template = document.querySelector('#'+ruleTemplate).content;
+	numUrls = allUrls.length;
 
     // add a rule for each url
     for (var i = 0; i<numUrls; i++) {
 	var allPaths = Object.keys(rules[allUrls[i]]);
 	var numPaths = allPaths.length;
 	for (var j = 0; j<numPaths; j++) {
-	    create_rule(allUrls[i],rules[allUrls[i]][allPaths[j]],template,['url','classToRemove','idToRemove']);
+	    var url = allUrls[i] + allPaths[j],
+		patterns = rules[allUrls[i]][allPaths[j]],
+		rule = {'url': url,
+			'classToRemove': patterns.classRule,
+			'idToRemove': patterns.idRule};
+	    add_rule(rule,ruleTemplate,['url','classToRemove','idToRemove']);
 	}
     }
 }
@@ -67,11 +72,8 @@ function storeRulesInArray(rules){
 	classRule = concatenatePatterns(rules[i].getElementsByClassName('classToRemove')[0].value.replace(/\s+/g, ''),'.');
 	idRule = concatenatePatterns(rules[i].getElementsByClassName('idToRemove')[0].value.replace(/\s+/g, ''),'#');
 	url = urlparts.scheme.text + "://" + urlparts.host.text;
-	rest_of_the_url[(urlparts.pathname.text + urlparts.search.text).replace(/WILDCARD/g,'*')] =
-	    {
-		"classRule": classRule,
-		"idRule": idRule
-	    };
+	rest_of_the_url[(urlparts.pathname.text + urlparts.search.text).replace(/WILDCARD/g,'*')] = {"classRule": classRule, "idRule": idRule };
+
 	if (options[url])
 	    options[url].push(rest_of_the_url);
 	else
@@ -118,23 +120,27 @@ function initOptionsPage() {
     };
     saveButton.addEventListener("click", saveOptions);
 
-    // var addClassPatternButton = document.getElementById("includeRuleAddButton");
-    // addClassPatternButton.addEventListener("click", function() {
-    // 	add_pattern({
-    // 	    classURLpattern: "",
-    // 	    classToRemove: ""
-    // 	},'includeClassRules');
-    // });
-
-    document.addEventListener("keyup", function(event) {
-	var ref1;
-	if (event.ctrlKey && event.keyCode === 13) {
-	    if (typeof document !== "undefined" && document !== null ? (ref1 = document.activeElement) != null ? ref1.blur : void 0 : void 0) {
-		document.activeElement.blur();
-	    }
-	    saveOptions();
-	}
+    var addPatternButton = document.getElementById('includeRuleAddButton');
+    addPatternButton.addEventListener("click", function() {
+	add_rule({
+	    'url': "",
+	    'classToRemove': "",
+	    'idToRemove' : ""
+	},'ruleTemplate', ['url','classToRemove','idToRemove']);
+	// focus on the newly added rule
+	var rulesArea = document.getElementById('rules');
+	rulesArea.lastElementChild.querySelector('input').focus();
     });
+
+    // document.addEventListener("keyup", function(event) {
+    // 	var ref1;
+    // 	if (event.ctrlKey && event.keyCode === 13) {
+    // 	    if (typeof document !== "undefined" && document !== null ? (ref1 = document.activeElement) != null ? ref1.blur : void 0 : void 0) {
+    // 		document.activeElement.blur();
+    // 	    }
+    // 	    saveOptions();
+    // 	}
+    // });
 };
 
 initOptionsPage();
