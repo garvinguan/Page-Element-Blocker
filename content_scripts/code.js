@@ -39,7 +39,7 @@ function getRule(options, url) {
 	if (testKey.test(url)) {
 	    var subPath = Object.keys(options[key]);
 	    for (var j = 0; j<subPath.length; j++) {
-		var subPathKey = new RegExp('^' + subPath[j].replace(/\*/g,'.*'), 'g'),
+		var subPathKey = new RegExp('^' + subPath[j].replace(/\*/g,'.*')),
 		    parsedSubPath = parsedURL.pathname.text + parsedURL.search.text;
 		if (subPathKey.test(parsedSubPath)) {
 		    var comma = '';
