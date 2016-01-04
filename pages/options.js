@@ -1,8 +1,3 @@
-function onUpdated() {
-    saveButton.removeAttribute("disabled");
-    return saveButton.innerHTML = "Save Changes";
-};
-
 function add_rule(ruleData, ruleTemplate,ref) {
     var content, rule, field, element, event, ref1 = ["input", "change"],
 	rulesArea = document.getElementById('rules'),
@@ -19,8 +14,8 @@ function add_rule(ruleData, ruleTemplate,ref) {
 	}
     }
     rule.querySelector(".includeRemoveButton").addEventListener("click", (function(event) {
-	rule = event.target.parentNode.parentNode;
-	rule.parentNode.removeChild(rule);
+	rule = event.target.parentNode.parentNode.parentNode;
+	rule.parentNode.remove();
 	onUpdated();
     }));
     rulesArea.appendChild(rule);
@@ -33,15 +28,16 @@ function restore_rules(rules, ruleTemplate) {
 
     // add a rule for each url
     for (var i = 0; i<numUrls; i++) {
-	var allPaths = Object.keys(rules[allUrls[i]]);
-	var numPaths = allPaths.length;
+	var allSubPaths = Object.keys(rules[allUrls[i]]);
+	var numPaths = allSubPaths.length;
 	for (var j = 0; j<numPaths; j++) {
-	    var url = allUrls[i] + allPaths[j],
-		patterns = rules[allUrls[i]][allPaths[j]],
+	    var url = allUrls[i] + allSubPaths[j],
+		patterns = rules[allUrls[i]][allSubPaths[j]],
 		rule = {'url': url,
 			'classToRemove': patterns.classRule,
 			'idToRemove': patterns.idRule};
-	    add_rule(rule,ruleTemplate,['url','classToRemove','idToRemove']);
+	    if (patterns.idRule.length > 0 || patterns.classRule.length > 0)
+		add_rule(rule,ruleTemplate,['url','classToRemove','idToRemove']);
 	}
     }
 }
@@ -66,18 +62,19 @@ function concatenatePatterns(patterns, selector) {
     return pattern;
 }
 function storeRulesInArray(rules){
-    var options = {}, url, rest_of_the_url = {}, urlparts, rule, classRule, idRule;
+    var options = {}, url, urlparts, rule, classRule, idRule;
     for(var i=0;i<rules.length; i++){
-	urlparts = URL.parse(rules[i].getElementsByClassName('url')[0].value.replace(/\*/g,'WILDCARD'));
+	var rest_of_the_url = {};
+	urlparts = URL.parse(rules[i].getElementsByClassName('url')[0].value);
 	classRule = concatenatePatterns(rules[i].getElementsByClassName('classToRemove')[0].value.replace(/\s+/g, ''),'.');
 	idRule = concatenatePatterns(rules[i].getElementsByClassName('idToRemove')[0].value.replace(/\s+/g, ''),'#');
 	url = urlparts.scheme.text + "://" + urlparts.host.text;
-	rest_of_the_url[(urlparts.pathname.text + urlparts.search.text).replace(/WILDCARD/g,'*')] = {"classRule": classRule, "idRule": idRule };
+	rest_of_the_url = urlparts.pathname.text + urlparts.search.text;
 
-	if (options[url])
-	    options[url].push(rest_of_the_url);
-	else
-	    options[url] = [rest_of_the_url];
+	if (!options[url])
+	    options[url] = {};
+
+	options[url][rest_of_the_url] = {"classRule": classRule, "idRule": idRule };
     }
     console.log(options);
     return options;
@@ -87,14 +84,16 @@ function save_options() {
     // get the input boxes with the options and store them
     options = storeRulesInArray(document.querySelectorAll('.rule'));
 
-    // chrome.storage.sync.set(options, function() {
-    //     // Update status to let user know options were saved.
-    //     var status = document.getElementById('status');
-    //     status.textContent = 'Options saved.';
-    //     setTimeout(function() {
-    //         status.textContent = '';
-    //     }, 750);
-    // });
+    chrome.storage.sync.clear(function () {
+	chrome.storage.sync.set(options, function() {
+	    // Update status to let user know options were saved.
+	    var status = document.getElementById('status');
+	    status.textContent = 'Options saved.';
+	    setTimeout(function() {
+		status.textContent = '';
+	    }, 750);
+	});
+    });
 }
 
 function restoreOptions(options) {
@@ -103,14 +102,21 @@ function restoreOptions(options) {
 
 function restore_options() {
     chrome.storage.sync.get(null, function(options){
+	console.log(options);
 	if (Object.keys(options).length !== 0)
 	    restoreOptions(options);
     });
 };
 
+var saveButton = document.getElementById('saveOptions');
+
+function onUpdated() {
+    saveButton.removeAttribute("disabled");
+    return saveButton.innerHTML = "Save Changes";
+};
+
 function initOptionsPage() {
-    // restore_options();
-    var saveButton = document.getElementById('saveOptions');
+    restore_options();
     saveButton.disabled = false;
 
     var saveOptions = function() {
@@ -131,16 +137,6 @@ function initOptionsPage() {
 	var rulesArea = document.getElementById('rules');
 	rulesArea.lastElementChild.querySelector('input').focus();
     });
-
-    // document.addEventListener("keyup", function(event) {
-    // 	var ref1;
-    // 	if (event.ctrlKey && event.keyCode === 13) {
-    // 	    if (typeof document !== "undefined" && document !== null ? (ref1 = document.activeElement) != null ? ref1.blur : void 0 : void 0) {
-    // 		document.activeElement.blur();
-    // 	    }
-    // 	    saveOptions();
-    // 	}
-    // });
 };
 
 initOptionsPage();

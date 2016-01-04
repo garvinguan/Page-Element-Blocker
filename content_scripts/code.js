@@ -1,45 +1,3 @@
-function testUrl(url, options) {
-    var numUrls = options.length;
-    for (var i=0; i<numUrls; i++) {
-	var urlMatcher = urlToTest(options[i]);
-	if (urlMatcher(url))
-	    return options[i];
-    }
-}
-
-function urlToTest(input){
-    var patched = input.replace(/\*/g, 'WILDCARD');
-
-    var parts = URL.parse(patched);
-
-    function makeTest(str){
-        if (str === 'WILDCARD') return function(){ return true; };
-        var pattern = escapeRegExp(str).replace(/WILDCARD/g,'.*');
-        var regex = new RegExp('^' + pattern + '$', 'g');
-        return function(target){ return regex.test(target); };
-    }
-
-    var tests = {
-        scheme: makeTest(parts.scheme.text),
-        host: makeTest(parts.host.text),
-        pathname: makeTest(parts.pathname.text),
-        search: makeTest(parts.search.text)
-    };
-
-    if (/^\/WILDCARD$/g.test(parts.pathname.text))
-	tests.search = function(t) { return true; };
-
-    return function(url2) {
-	var parsed2 = URL.parse(url2);
-        return (
-            tests.scheme(parsed2.scheme.text) &&
-		tests.host(parsed2.host.text) &&
-		tests.pathname(parsed2.pathname.text) &&
-		tests.search(parsed2.search.text)
-        );
-    };
-}
-
 function deleteElements(selector) {
     // in case the content script was injected before the page is partially loaded
     if (!selector) return;
@@ -47,7 +5,11 @@ function deleteElements(selector) {
 
     var mo = new MutationObserver(process);
     mo.observe(document, {subtree:true, childList:true});
-    document.addEventListener('DOMContentLoaded', function() { mo.disconnect(); });
+    document.addEventListener('DOMContentLoaded', function() {
+	setTimeout(function() {
+	    mo.disconnect();
+	}, 5000);
+    });
 
     function process(mutations) {
         for (var i = 0; i < mutations.length; i++) {
@@ -65,31 +27,41 @@ function deleteElements(selector) {
     }
 }
 
-function escapeRegExp(string){
-    return string.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
+function getRule(options, url) {
+    var urls = Object.keys(options),
+	numUrls = urls.length,
+	parsedURL = URL.parse(url);
+
+    for (var i = 0; i<numUrls; i++) {
+	// check url against every url in options
+	var key = urls[i].replace(/\*/g,'.*');
+	var testKey = new RegExp('^' + key, 'g');
+	if (testKey.test(url)) {
+	    var subPath = Object.keys(options[key]);
+	    for (var j = 0; j<subPath.length; j++) {
+		var subPathKey = new RegExp('^' + subPath[j].replace(/\*/g,'.*'), 'g'),
+		    parsedSubPath = parsedURL.pathname.text + parsedURL.search.text;
+		if (subPathKey.test(parsedSubPath)) {
+		    var comma = '';
+		    if (options[key][subPath[j]].classRule.length > 0 &&
+			options[key][subPath[j]].idRule.length > 0)
+			comma = ',';
+		    return options[key][subPath[j]].classRule + comma + options[key][subPath[j]].idRule;
+		}
+	    }
+	}
+    }
+    return null;
 }
 
 chrome.storage.sync.get(null, function(options) {
     if (Object.keys(options).length>0)
     {
-	// TODO: fix this section to check both classes and ids
-	var classUrls = options.classOptions;
-	var matchedClassUrl = testUrl(document.URL, classUrls);
-	if (matchedClassUrl)
+	var urls = Object.keys(options);
+	var pattern = getRule(options, document.URL);
+	if (pattern)
 	{
-	    deleteElements(options.classOptions[matchedClassUrl]);
-	}
-
-	if (options.idOptions[matchedClassUrl])
-	{
-	    deleteElements(options.idOptions[matchedClassUrl]);
-	}
-	else
-	{
-	    var idUrls = Object.keys(options.idOptions);
-	    var matchedIdUrl = testUrl(document.URL, idUrls);
-	    if (matchedIdUrl)
-		deleteElements(options.idOptions[matchedIdUrl]);
+	    deleteElements(pattern);
 	}
     }
 });
