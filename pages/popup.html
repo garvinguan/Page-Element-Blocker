@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
     <head>
+	<meta charset="UTF-8">
 	<link rel="stylesheet" type="text/css" href="options.css">
 	<style>
 	 * {
@@ -20,6 +21,15 @@
              min-height: 40px;
              max-height: 40px;
 	 }
+	 #popup {
+	     visibility: hidden;
+	     min-width: 300px;
+	     min-height: 200px;
+	     position: fixed;
+	     bottom: 130px;
+	     right: 130px;
+	     background-color: yellow;
+	 }
 	</style>
 	<title>Page Element Blocker Add Rule</title>
 	<style>
@@ -32,6 +42,15 @@
              text-overflow: ellipsis;
              overflow: hidden;
              max-width: 400px;
+	 }
+	 .includeSelectorButton {
+	     width: 1px; /* 1px; smaller than the button itself. */
+	     text-align: center;
+	 }
+	 .includeSelectorButtonButton {
+	     border: none;
+	     background-color: #fff;
+	     color: #979ca0;
 	 }
 	</style>
     </head>
@@ -51,7 +70,7 @@
 		    <td><span class="includeHeaderText">Ids</span></td>
 		</tr>
 		<tr class="includeIDRuleTemplateInstance">
-		    <td></td>
+		    <td class="includeSelectorButton"><input type="button" class="includeSelectorButtonButton" value="✖"></td>
 		    <td class="includeRulePassKeys"><input type="text" id="idsToRemove" placeholder="Ids to exclude"></td>
 		</tr>
 	    </table>
@@ -60,9 +79,15 @@
 		    <div id="status"></div>
 		    <button id="saveOptions" disabled="true">No Changes</button>
 		</div>
+		<template id="messageTemplate">
+		    <p class="message">
+		    </p>
+		</template>
 	    </div>
 	</div>
 	<script src="../content_scripts/url.js"></script>
 	<script src="popup.js"></script>
     </body>
+    <div id="popup">
+    </div>
 </html>

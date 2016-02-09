@@ -37,16 +37,16 @@ function getRule(options, url) {
 	var key = urls[i].replace(/\*/g,'.*');
 	var testKey = new RegExp('^' + key, 'g');
 	if (testKey.test(url)) {
-	    var subPath = Object.keys(options[key]);
+	    var subPath = Object.keys(options[urls[i]]);
 	    for (var j = 0; j<subPath.length; j++) {
 		var subPathKey = new RegExp('^' + subPath[j].replace(/\*/g,'.*')),
 		    parsedSubPath = parsedURL.pathname.text + parsedURL.search.text;
 		if (subPathKey.test(parsedSubPath)) {
 		    var comma = '';
-		    if (options[key][subPath[j]].classRule.length > 0 &&
-			options[key][subPath[j]].idRule.length > 0)
+		    if (options[urls[i]][subPath[j]].classRule.length > 0 &&
+			options[urls[i]][subPath[j]].idRule.length > 0)
 			comma = ',';
-		    return options[key][subPath[j]].classRule + comma + options[key][subPath[j]].idRule;
+		    return options[urls[i]][subPath[j]].classRule + comma + options[urls[i]][subPath[j]].idRule;
 		}
 	    }
 	}

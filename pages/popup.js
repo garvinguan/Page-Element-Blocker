@@ -36,7 +36,7 @@ function addRuleToOptions(Options,url, classPatterns, idPatterns) {
     }
 }
 
-function save_options(errorCallback) {
+function save_options(urlToAdd,classesToRemove,idsToRemove) {
     var url = urlToAdd.value.replace(/\s+/g, ''),
 	classPatterns = classesToRemove.value.replace(/\s+/g, ''),
 	idPatterns = idsToRemove.value.replace(/\s+/g, '');
@@ -48,12 +48,12 @@ function save_options(errorCallback) {
     else {
 	addRuleToOptions(Options,url,classPatterns, idPatterns);
 	chrome.storage.sync.set(Options, function() {
-            // Update status to let user know options were saved.
-            var status = document.getElementById('status');
-            status.textContent = 'Options saved.';
-            setTimeout(function() {
+	    // Update status to let user know options were saved.
+	    var status = document.getElementById('status');
+	    status.textContent = 'Options saved.';
+	    setTimeout(function() {
 		status.textContent = '';
-            }, 750);
+	    }, 750);
 	});
     }
     function appendSym(patterns,sym) {
@@ -71,7 +71,6 @@ function save_options(errorCallback) {
 }
 
 function retrieveOption(options, url) {
-    console.log(url);
     var urlKeys = options[url.scheme.text + "://" + url.host.text];
     if (urlKeys)
     {
@@ -81,10 +80,8 @@ function retrieveOption(options, url) {
 	for (var i=0; i<subPaths.length; i++) {
 	    var urlRegex = new RegExp('^' + subPaths[i].replace(/\*/g,'.*')),
 		urlKey = url.pathname.text + url.search.text;
-	    console.log("urlRegex.test(urlKey)" + urlRegex.test(urlKey));
 	    var subPathMatches = urlRegex.test(urlKey);
 	    if (subPathMatches) {
-		console.log("what's going on");
 		if (largestUrlLength < subPaths[i].length) {
 		    largestUrlLength = subPaths[i].length;
 		    largestUrlIndex = i;
@@ -102,30 +99,11 @@ function retrieveOption(options, url) {
     return {"url": url.scheme.text + "://" + url.host.text + "/*",
 	    "rule": {"classRule": '',"idRule": ''}};
 }
-var Options = {}, urlToAdd, classesToRemove, idsToRemove;
+var Options = {};
 
-document.addEventListener('DOMContentLoaded', function() {
-    var saveButton = document.getElementById('saveOptions');
-
-    var onUpdated = function() {
-        saveButton.removeAttribute("disabled");
-        return saveButton.innerHTML = "Save Changes";
-    };
-
-    var saveOptions = function() {
-	save_options();
-        saveButton.disabled = true;
-        return saveButton.innerHTML = "No Changes";
-    };
-    saveButton.addEventListener("click", saveOptions);
-
-    urlToAdd = document.getElementById('urlToAdd');
-    classesToRemove = document.getElementById('classesToRemove');
-    idsToRemove = document.getElementById('idsToRemove');
+function fillTextBoxes(urlToAdd,classesToRemove,idsToRemove) {
     initBrowserAction(function(url) {
-	console.log("in initBrowserAction");
 	var parsedURL = URL.parse(url);
-	console.log(parsedURL);
 	chrome.storage.sync.get(null, function(Options){
 	    if (Object.keys(Options).length > 0)
 	    {
@@ -139,11 +117,107 @@ document.addEventListener('DOMContentLoaded', function() {
 	    {
 		Options = {};
 		var urlKey = parsedURL.scheme.text + "://" + parsedURL.host.text;
-		console.log(urlKey.value);
 		urlToAdd.value = urlKey + "/*";
 	    }
 	});
     });
+
+}
+
+function selectThings() {
+    function clear(node) {
+	while (node.hasChildNodes()) {
+	    node.removeChild(node.firstChild);
+	}
+    }
+
+    function over(e) {
+	var cl = e.target.classList[0];
+	if (cl !== undefined && cl !== 'lit') {
+	    cl = '.' + cl;
+	} else if (e.target.id) {
+	    cl = '#' + e.target.id;
+	} else {
+	    cl = e.target.tagName.toLowerCase();
+	}
+
+	if (over.last === cl) return;
+	over.last = cl;
+	var litElements = document.getElementsByClassName('lit');
+	while (litElements.length > 0) {
+	    litElements[0].classList.remove("lit");
+	}
+	if (!cl) return;
+	var sameClassElements = typeof cl === 'string' ? document.querySelectorAll(cl) : [cl];
+	for (var i = 0; i < sameClassElements.length; i++) {
+	    sameClassElements[i].classList.add("lit");
+	}
+	showPopup(e.target);
+    }
+
+    function showPopup(e) {
+	var messageTemplate = document.getElementById('messageTemplate').content,
+	    popup = document.getElementById('popup'),
+	    classList = [],
+	    idList = [];
+
+	clear(popup);
+	popup.style.visibility = 'visible';
+	while (e !== document.body) {
+	    if (e.classList[0] && e.classList[0] !== 'lit') {
+		classList = classList.concat(e.classList[0]);
+	    }
+
+	    if (e.id.length > 0)
+		idList.push(e.id);
+	    e = e.parentNode;
+	}
+	var length = classList.length;
+	// console.log(classList);
+	for (var i = 0; i < length; i++) {
+	    appendOption('.' + classList[i], popup, messageTemplate);
+	}
+	length = idList.length;
+	for (var j = 0; j < length; j++) {
+	    appendOption('#' + idList[j], popup, messageTemplate);
+	}
+    }
+
+    function appendOption(selector, popup, messageTemplate) {
+	var messageNode = document.importNode(messageTemplate, true),
+	    message = messageNode.querySelector('.message'),
+	    textNode = document.createTextNode(selector);
+
+	message.appendChild(textNode);
+	popup.appendChild(messageNode);
+    }
+    document.body.addEventListener('click', over);
+    document.body.addEventListener('mouseover', over);
+
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var saveButton = document.getElementById('saveOptions'),
+	urlToAdd = document.getElementById('urlToAdd'),
+	classesToRemove = document.getElementById('classesToRemove'),
+	idsToRemove = document.getElementById('idsToRemove'),
+	selectorButton = document.getElementsByClassName('includeSelectorButton')[0];
+
+    var onUpdated = function() {
+	saveButton.removeAttribute("disabled");
+	return saveButton.innerHTML = "Save Changes";
+    };
+
+    var saveOptions = function() {
+	save_options(urlToAdd,classesToRemove,idsToRemove);
+	saveButton.disabled = true;
+	return saveButton.innerHTML = "No Changes";
+    };
+    saveButton.addEventListener("click", saveOptions);
+
+    selectorButton.addEventListener("click", selectThings);
+
+    fillTextBoxes(urlToAdd,classesToRemove,idsToRemove);
 
     var events = ['input','change'];
     for (var i=0; i<events.length; i++)
